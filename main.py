@@ -10,10 +10,17 @@ def get_currency_list():
 @st.cache_data
 def get_market_data(id):
     try:
-        response = requests.get(f'{link}/coins/{id}', params={'localization': 'false', 'tickers': 'false', 'market_data': 'true', 'sparkline': 'false'}).json()
-        return response
-    except Exception as e:
-        st.error(f"Error fetching market data for {id}: {e}")
+        response = requests.get(f'{link}/coins/{id}', params={'localization': 'false', 'tickers': 'false', 'market_data': 'true', 'sparkline': 'false'})
+        if response.status_code != 200:
+            st.error(f"API request failed with status {response.status_code} for {id}")
+            return None
+        data = response.json()
+        return data
+    except requests.exceptions.RequestException as e:
+        st.error(f"Request error fetching market data for {id}: {e}")
+        return None
+    except ValueError as e:  # JSONDecodeError
+        st.error(f"Invalid JSON response for {id}: {e}")
         return None
 
 @st.cache_data
