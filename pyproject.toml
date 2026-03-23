@@ -1,5 +1,5 @@
 [project]
-name= "Streamlit_API_HW"
+name= "main"
 version="0.1.0"
 requires-python = ">=3.12.3"
 dependencies = [
