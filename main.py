@@ -63,9 +63,8 @@ if __name__ == '__main__':
        if not working_df.empty:
            current_price = working_df.at[0, 'current_price']
            st.metric(label='Current Price (USD)', value=f"${current_price:,.2f}")
+           st.table(working_df[['name', 'current_price', 'market_cap', 'total_volume']])
        
        if not history_df.empty:
            st.subheader('Historical Price (USD)')
            st.line_chart(history_df['price'], use_container_width=True)
-
-       st.table(working_df[['name', 'current_price', 'market_cap', 'total_volume']])
