@@ -20,16 +20,23 @@ def get_market_data(id):
 def get_price_history(id, days='365'):
     # CoinGecko public API allows max 365 days for historical market_chart data.
     try:
-        response = requests.get(f'{link}/coins/{id}/market_chart', params={'vs_currency': 'usd', 'days': days}).json()
-        if 'error' in response:
-            st.error(response['error'])
+        response = requests.get(f'{link}/coins/{id}/market_chart', params={'vs_currency': 'usd', 'days': days})
+        if response.status_code != 200:
+            st.error(f"API request failed with status {response.status_code} for {id}")
             return pd.DataFrame()
-        prices = response.get('prices', [])
+        data = response.json()
+        if 'error' in data:
+            st.error(data['error'])
+            return pd.DataFrame()
+        prices = data.get('prices', [])
         df = pd.DataFrame(prices, columns=['timestamp', 'price'])
         df['date'] = pd.to_datetime(df['timestamp'], unit='ms')
         return df.set_index('date')
-    except Exception as e:
-        st.error(f"Error fetching price history for {id}: {e}")
+    except requests.exceptions.RequestException as e:
+        st.error(f"Request error fetching price history for {id}: {e}")
+        return pd.DataFrame()
+    except ValueError as e:  # JSONDecodeError is a ValueError
+        st.error(f"Invalid JSON response for {id}: {e}")
         return pd.DataFrame()
 
 def dataframe_setup(currency):
