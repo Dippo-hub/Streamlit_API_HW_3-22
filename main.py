@@ -47,6 +47,10 @@ currency_list=get_currency_list()
 
 df_currency=pd.DataFrame(currency_list)
 
+if 'name' not in df_currency.columns:
+    st.error("Failed to load cryptocurrency list from API. Please check your internet connection or try again later.")
+    st.stop()
+
 if __name__ == '__main__':
    st.title('Cryptocurrency Prices')
    st.selectbox('Select a cryptocurrency', df_currency['name'], key='currency')
